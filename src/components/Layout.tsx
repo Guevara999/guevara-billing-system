@@ -1,6 +1,7 @@
 import { useState, ReactNode } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSession } from '@/components/SessionContextProvider';
+import { useGuest } from '@/components/GuestContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -28,7 +29,9 @@ import {
   LogOut,
   Menu,
   X,
-  Building2
+  Building2,
+  Sparkles,
+  User
 } from 'lucide-react';
 
 const menuItems = [
@@ -43,6 +46,7 @@ const menuItems = [
 
 export const Layout = ({ children }: { children: ReactNode }) => {
   const { session } = useSession();
+  const { isGuest, guestName } = useGuest();
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
@@ -54,16 +58,21 @@ export const Layout = ({ children }: { children: ReactNode }) => {
     ? `${session.user.user_metadata.first_name[0]}${session.user.user_metadata.last_name?.[0] || ''}`
     : session?.user?.email?.[0]?.toUpperCase() || 'U';
 
+  const displayName = isGuest ? guestName : (session?.user?.user_metadata?.first_name || 'User');
+  const displayInitials = isGuest 
+    ? `${guestName[0]}${guestName.length > 1 ? guestName[1] : 'U'}`
+    : userInitials;
+
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        <Sidebar className="border-r">
-          <SidebarHeader className="border-b">
+        <Sidebar className="border-r bg-gradient-to-b from-purple-50 via-pink-50 to-orange-50">
+          <SidebarHeader className="border-b border-purple-200">
             <div className="flex items-center gap-2 px-2 py-2">
-              <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-teal-500 flex items-center justify-center">
+              <div className="h-8 w-8 rounded-xl bg-gradient-to-br from-purple-600 via-pink-600 to-orange-600 flex items-center justify-center shadow-lg">
                 <Wifi className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
                 Guevara
               </span>
             </div>
@@ -79,14 +88,14 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                     <SidebarMenuButton asChild>
                       <Link
                         to={item.path}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-lg transition-colors ${
+                        className={`flex items-center gap-3 px-3 py-2 rounded-xl transition-colors ${
                           isActive 
-                            ? 'bg-gradient-to-r from-blue-500 to-teal-500 text-white' 
-                            : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                            ? 'bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 text-white shadow-lg' 
+                            : 'hover:bg-white/20 hover:border-white/20 border-transparent border'
                         }`}
                       >
                         <Icon className="h-5 w-5" />
-                        <span>{item.label}</span>
+                        <span className="flex-1">{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -95,19 +104,19 @@ export const Layout = ({ children }: { children: ReactNode }) => {
             </SidebarMenu>
           </SidebarContent>
 
-          <SidebarFooter className="border-t">
+          <SidebarFooter className="border-t border-purple-200">
             <div className="flex items-center gap-3 p-3">
-              <Avatar>
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-teal-500 text-white">
-                  {userInitials}
+              <Avatar className="h-10 w-10">
+                <AvatarFallback className="h-10 w-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center text-white font-bold">
+                  {displayInitials}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">
-                  {session?.user?.user_metadata?.first_name || 'User'}
+                <p className="text-sm font-medium truncate bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
+                  {displayName}
                 </p>
                 <p className="text-xs text-gray-500 truncate">
-                  {session?.user?.email}
+                  {isGuest ? '(Guest)' : session?.user?.email}
                 </p>
               </div>
               <Button
@@ -116,22 +125,22 @@ export const Layout = ({ children }: { children: ReactNode }) => {
                 onClick={handleSignOut}
                 className="ml-auto"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-4 w-4 text-purple-600 hover:text-purple-800" />
               </Button>
             </div>
           </SidebarFooter>
         </Sidebar>
 
         <main className="flex-1 flex flex-col">
-          <header className="border-b bg-white dark:bg-gray-900 p-4">
+          <header className="border-b border-purple-200 bg-white/80 backdrop-blur-sm p-4">
             <div className="flex items-center gap-4">
-              <SidebarTrigger />
-              <h1 className="text-xl font-semibold">
+              <SidebarTrigger className="text-purple-600 hover:text-purple-800" />
+              <h1 className="text-xl font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
                 {menuItems.find(item => item.path === location.pathname)?.label || 'Dashboard'}
               </h1>
             </div>
           </header>
-          <div className="flex-1 p-6">
+          <div className="flex-1 p-6 bg-gradient-to-b from-purple-50 via-pink-50 to-orange-50">
             {children}
           </div>
         </main>

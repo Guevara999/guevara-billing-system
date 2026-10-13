@@ -6,7 +6,9 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/components/ui/use-toast';
-import { Wifi, Mail, Lock, User, Building } from 'lucide-react';
+import { Wifi, Mail, Lock, User, Building, UserPlus, Sparkles } from 'lucide-react';
+import { useGuest } from '@/components/GuestContext';
+import { useNavigate } from 'react-router-dom';
 
 export const AuthForm = () => {
   const [email, setEmail] = useState('');
@@ -15,6 +17,8 @@ export const AuthForm = () => {
   const [lastName, setLastName] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [loading, setLoading] = useState(false);
+  const { setGuest, setGuestName } = useGuest();
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,13 +75,25 @@ export const AuthForm = () => {
     }
   };
 
+  const handleGuestAccess = () => {
+    setGuest(true);
+    setGuestName('Guest User');
+    toast({
+      title: "Welcome, Guest!",
+      description: "You're now viewing the demo version. Some features may be limited.",
+    });
+    navigate('/');
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-teal-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 via-pink-50 to-orange-50 p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-2 mb-4">
-            <Wifi className="h-10 w-10 text-blue-600" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-teal-600 bg-clip-text text-transparent">
+            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center shadow-lg">
+              <Wifi className="h-7 w-7 text-white" />
+            </div>
+            <span className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 bg-clip-text text-transparent">
               Guevara Billing
             </span>
           </div>
@@ -91,7 +107,7 @@ export const AuthForm = () => {
           </TabsList>
 
           <TabsContent value="login">
-            <Card>
+            <Card className="shadow-xl border-0">
               <CardHeader>
                 <CardTitle>Welcome back</CardTitle>
                 <CardDescription>Enter your credentials to access your dashboard</CardDescription>
@@ -130,7 +146,7 @@ export const AuthForm = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" disabled={loading}>
                     {loading ? 'Signing in...' : 'Sign In'}
                   </Button>
                 </CardFooter>
@@ -139,7 +155,7 @@ export const AuthForm = () => {
           </TabsContent>
 
           <TabsContent value="signup">
-            <Card>
+            <Card className="shadow-xl border-0">
               <CardHeader>
                 <CardTitle>Create your account</CardTitle>
                 <CardDescription>Start managing your WiFi billing system</CardDescription>
@@ -224,7 +240,7 @@ export const AuthForm = () => {
                   </div>
                 </CardContent>
                 <CardFooter>
-                  <Button type="submit" className="w-full" disabled={loading}>
+                  <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" disabled={loading}>
                     {loading ? 'Creating account...' : 'Create Account'}
                   </Button>
                 </CardFooter>
@@ -232,6 +248,24 @@ export const AuthForm = () => {
             </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Guest Access Button */}
+        <div className="mt-6">
+          <Button
+            variant="outline"
+            className="w-full bg-white/80 backdrop-blur-sm border-2 border-purple-200 hover:border-purple-400 hover:bg-purple-50 text-purple-700"
+            onClick={handleGuestAccess}
+          >
+            <div className="flex items-center justify-center gap-2">
+              <Sparkles className="h-5 w-5" />
+              <UserPlus className="h-5 w-5" />
+              <span>Continue as Guest</span>
+            </div>
+          </Button>
+          <p className="text-center text-xs text-gray-500 mt-3">
+            Try the demo without creating an account
+          </p>
+        </div>
       </div>
     </div>
   );
