@@ -1,4 +1,5 @@
 import { useSession } from '@/components/SessionContextProvider';
+import { useGuest } from '@/components/GuestContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -24,72 +25,111 @@ interface StatCard {
 
 export default function Dashboard() {
   const { session } = useSession();
-  const [stats, setStats] = useState<StatCard[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      if (!session) return;
-
-      try {
-        // Get total customers
-        const { count: customerCount } = await supabase
-          .from('users_billing')
-          .select('*', { count: 'exact' });
-
-        // Get total revenue
-        const { data: billingData } = await supabase
-          .from('users_billing')
-          .select('amount_paid')
-          .eq('status', 'paid');
-
-        const totalRevenue = billingData?.reduce((sum, item) => sum + (item.amount_paid || 0), 0) || 0;
-
-        // Get active plans
-        const { count: planCount } = await supabase
-          .from('plans')
-          .select('*', { count: 'exact' })
-          .eq('is_active', true);
-
-        setStats([
-          {
-            title: 'Total Customers',
-            value: customerCount || 0,
-            change: '+12% this month',
-            icon: Users,
-            color: 'text-blue-600',
-          },
-          {
-            title: 'Total Revenue',
-            value: `KSh ${totalRevenue.toLocaleString()}`,
-            change: '+8.5% this month',
-            icon: CreditCard,
-            color: 'text-green-600',
-          },
-          {
-            title: 'Active Plans',
-            value: planCount || 0,
-            change: '+2 new plans',
-            icon: Wifi,
-            color: 'text-purple-600',
-          },
-          {
-            title: 'Network Usage',
-            value: '78%',
-            change: '2.4 GB / 3.1 GB',
-            icon: Activity,
-            color: 'text-orange-600',
-          },
-        ]);
-      } catch (error) {
-        console.error('Error fetching stats:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchStats();
-  }, [session]);
+    const { isGuest } = useGuest();
+    const [stats, setStats] = useState<StatCard[]>([]);
+    const [loading, setLoading] = useState(true);
+  
+    useEffect(() => {
+      const fetchStats = async () => {
+        // Allow both authenticated and guest users to view the dashboard
+        // For guests, we'll show mock/demo data since they don't have a real account
+        if (isGuest) {
+          // Mock data for guest users
+          setStats([
+            {
+              title: 'Total Customers',
+              value: 142,
+              change: '+12% this month',
+              icon: Users,
+              color: 'text-purple-600',
+            },
+            {
+              title: 'Total Revenue',
+              value: 'KSh 356,000',
+              change: '+8.5% this month',
+              icon: CreditCard,
+              color: 'text-green-600',
+            },
+            {
+              title: 'Active Plans',
+              value: 5,
+              change: '+2 new plans',
+              icon: Wifi,
+              color: 'text-pink-600',
+            },
+            {
+              title: 'Network Usage',
+              value: '78%',
+              change: '2.4 GB / 3.1 GB',
+              icon: Activity,
+              color: 'text-orange-600',
+            },
+          ]);
+          setLoading(false);
+          return;
+        }
+  
+        if (!session) return;
+  
+        try {
+          // Get total customers
+          const { count: customerCount } = await supabase
+            .from('users_billing')
+            .select('*', { count: 'exact' });
+  
+          // Get total revenue
+          const { data: billingData } = await supabase
+            .from('users_billing')
+            .select('amount_paid')
+            .eq('status', 'paid');
+  
+          const totalRevenue = billingData?.reduce((sum, item) => sum + (item.amount_paid || 0), 0) || 0;
+  
+          // Get active plans
+          const { count: planCount } = await supabase
+            .from('plans')
+            .select('*', { count: 'exact' })
+            .eq('is_active', true);
+  
+          setStats([
+            {
+              title: 'Total Customers',
+              value: customerCount || 0,
+              change: '+12% this month',
+              icon: Users,
+              color: 'text-purple-600',
+            },
+            {
+              title: 'Total Revenue',
+              value: `KSh ${totalRevenue.toLocaleString()}`,
+              change: '+8.5% this month',
+              icon: CreditCard,
+              color: 'text-green-600',
+            },
+            {
+              title: 'Active Plans',
+              value: planCount || 0,
+              change: '+2 new plans',
+              icon: Wifi,
+              color: 'text-pink-600',
+            },
+            {
+              title: 'Network Usage',
+              value: '78%',
+              change: '2.4 GB / 3.1 GB',
+              icon: Activity,
+              color: 'text-orange-600',
+            },
+          ]);
+        } catch (error) {
+          console.error('Error fetching stats:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+  
+      fetchStats();
+    }, [session, isGuest]);
 
   if (loading) {
     return (
