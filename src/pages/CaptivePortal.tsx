@@ -18,7 +18,9 @@ import {
   Clock,
   Sparkles,
   CheckCircle2,
-  Mail
+  Mail,
+  Flame,
+  Zap
 } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
@@ -31,36 +33,74 @@ export default function CaptivePortal() {
 
   const plans = [
     { 
-      id: 'daily', 
-      name: 'Daily Unlimited', 
-      price: 'KSh 50', 
-      speed: 'Up to 10Mbps', 
-      validity: '24 Hours',
-      description: 'Perfect for light browsing and social media'
+      id: 'monthly_unlimited', 
+      name: 'MONTHLY UNLIMITED', 
+      price: 'KSh 800', 
+      speed: 'Unlimited Data', 
+      validity: '30 Days',
+      description: 'Best value for heavy users and families',
+      badge: '🔥',
+      badgeColor: 'bg-red-100 text-red-700'
     },
     { 
-      id: 'weekly', 
-      name: 'Weekly Unlimited', 
-      price: 'KSh 300', 
-      speed: 'Up to 15Mbps', 
+      id: 'weekly_unlimited', 
+      name: 'WEEKLY UNLIMITED', 
+      price: 'KSh 200', 
+      speed: 'Unlimited Data', 
       validity: '7 Days',
-      description: 'Ideal for streaming and regular usage'
+      description: 'Ideal for streaming and regular usage',
+      badge: '🔥',
+      badgeColor: 'bg-red-100 text-red-700'
     },
     { 
-      id: 'monthly', 
-      name: 'Monthly Unlimited', 
-      price: 'KSh 1,000', 
-      speed: 'Up to 25Mbps', 
-      validity: '30 Days',
-      description: 'Best value for heavy users and families'
+      id: 'daily_2gb', 
+      name: 'DAILY 2 GB', 
+      price: 'KSh 20', 
+      speed: '2 GB Data', 
+      validity: '24 Hours',
+      description: 'Perfect for light browsing and social media',
+      badge: '⚡',
+      badgeColor: 'bg-yellow-100 text-yellow-700'
     },
     { 
-      id: 'premium', 
-      name: 'Premium Plus', 
-      price: 'KSh 2,000', 
-      speed: 'Up to 50Mbps', 
-      validity: '30 Days',
-      description: 'Ultra-fast for gaming and 4K streaming'
+      id: 'daily_unlimited_pro', 
+      name: 'DAILY UNLIMITED PRO', 
+      price: 'KSh 50', 
+      speed: 'Unlimited Data', 
+      validity: '24 Hours',
+      description: 'Full speed unlimited for a day',
+      badge: '⚡',
+      badgeColor: 'bg-yellow-100 text-yellow-700'
+    },
+    { 
+      id: 'twelve_hours', 
+      name: '12 HOURS UNLIMITED', 
+      price: 'KSh 20', 
+      speed: 'Unlimited Data', 
+      validity: '12 Hours',
+      description: 'Half day unlimited access',
+      badge: '⚡',
+      badgeColor: 'bg-yellow-100 text-yellow-700'
+    },
+    { 
+      id: 'daily_supersaver', 
+      name: 'DAILY SUPERSAVER UNLIMITED', 
+      price: 'KSh 30', 
+      speed: 'Unlimited Data', 
+      validity: '24 Hours',
+      description: 'Budget-friendly unlimited access',
+      badge: '⚡⚡',
+      badgeColor: 'bg-yellow-100 text-yellow-700'
+    },
+    { 
+      id: 'five_hours', 
+      name: '5 HOURS UNLIMITED', 
+      price: 'KSh 10', 
+      speed: 'Unlimited Data', 
+      validity: '5 Hours',
+      description: 'Quick access for short sessions',
+      badge: '🔥',
+      badgeColor: 'bg-red-100 text-red-700'
     }
   ];
 
@@ -108,14 +148,14 @@ export default function CaptivePortal() {
           <Card className="col-span-1 md:col-span-2 lg:col-span-2">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                <span>Choose Your Plan</span>
+                <Flame className="h-5 w-5 text-red-500" />
+                <span>Our Packages</span>
               </CardTitle>
               <CardDescription>
                 Select a plan that suits your needs
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3">
               {plans.map((plan) => (
                 <div 
                   key={plan.id} 
@@ -128,11 +168,9 @@ export default function CaptivePortal() {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
-                      <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 flex items-center justify-center text-white">
-                        {plan.id === 'daily' ? '📅' : plan.id === 'weekly' ? '📆' : plan.id === 'monthly' ? '🗓️' : '💎'}
-                      </div>
+                      <span className="text-lg">{plan.badge}</span>
                       <div>
-                        <h3 className="font-semibold">{plan.name}</h3>
+                        <h3 className="font-semibold text-gray-800">{plan.name}</h3>
                         <p className="text-xs text-gray-500">{plan.validity}</p>
                       </div>
                     </div>
@@ -297,7 +335,7 @@ export default function CaptivePortal() {
             <a href="#" className="text-purple-600 hover:underline">Privacy Policy</a>
           </p>
           <p className="mt-2 text-xs text-gray-400">
-            Guevara WiFi &copy; {new Date().getFullYear()} | Powered by Guevara Billing System
+            Copyright © Guevara Limited
           </p>
         </div>
       </div>
