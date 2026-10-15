@@ -1,981 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Guevara WiFi — Connect</title>
-  <meta name="description" content="Fast, affordable WiFi. Pay with M-Pesa and get online instantly.">
-  <style>
-    /* ========== RESET & VARIABLES ========== */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --primary: #0a7cff;
-      --primary-dark: #0056b3;
-      --primary-light: #e0f2fe;
-      --bg: #f5f7fa;
-      --card: #ffffff;
-      --text: #1a1a1a;
-      --muted: #6b7280;
-      --success: #10b981;
-      --error: #ef4444;
-      --warning: #f59e0b;
-      --border: #e5e7eb;
-      --radius: 16px;
-      --radius-sm: 10px;
-      --shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-      --shadow-lg: 0 12px 40px rgba(0, 0, 0, 0.15);
-      --font: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    }
-    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
-    body {
-      font-family: var(--font);
-      background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #f5f7fa 100%);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.5;
-      padding-bottom: 20px;
-    }
-
-    /* ========== LAYOUT ========== */
-    .container { width: 100%; max-width: 1100px; margin: 0 auto; padding: 0 16px; }
-    @media (min-width: 640px) { .container { padding: 0 24px; } }
-
-    /* ========== HEADER ========== */
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 0;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .brand { display: flex; align-items: center; gap: 10px; }
-    .brand-icon {
-      width: 40px; height: 40px;
-      background: var(--primary);
-      border-radius: 12px;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff;
-      box-shadow: 0 4px 12px rgba(10, 124, 255, 0.3);
-    }
-    .brand-icon svg { width: 22px; height: 22px; }
-    .brand-text h1 { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.02em; }
-    .brand-text span { font-size: 0.75rem; color: var(--muted); font-weight: 500; }
-    .support-link {
-      display: flex; align-items: center; gap: 6px;
-      font-size: 0.875rem; font-weight: 500;
-      color: var(--primary);
-      text-decoration: none;
-      padding: 8px 14px;
-      border-radius: 999px;
-      background: #fff;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      transition: all 0.2s;
-    }
-    .support-link:hover { background: var(--primary-light); }
-
-    /* ========== HERO ========== */
-    .hero {
-      text-align: center;
-      padding: 28px 0 20px;
-    }
-    .hero h2 {
-      font-size: clamp(1.6rem, 5vw, 2.2rem);
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.2;
-      margin-bottom: 10px;
-    }
-    .hero h2 span { color: var(--primary); }
-    .hero p {
-      font-size: 1rem;
-      color: var(--muted);
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    /* ========== SECTION TITLES ========== */
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .section-title svg { width: 20px; height: 20px; color: var(--primary); }
-
-    /* ========== PLANS GRID ========== */
-    .plans-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-    @media (min-width: 540px) { .plans-grid { grid-template-columns: repeat(2, 1fr); } }
-    @media (min-width: 900px) { .plans-grid { grid-template-columns: repeat(3, 1fr); } }
-
-    .plan-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 22px 20px 20px;
-      box-shadow: var(--shadow);
-      border: 2px solid transparent;
-      position: relative;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-      display: flex;
-      flex-direction: column;
-    }
-    .plan-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-      border-color: var(--primary);
-    }
-    .plan-card.popular {
-      border-color: var(--primary);
-      box-shadow: 0 8px 32px rgba(10, 124, 255, 0.2);
-    }
-    .plan-card.popular::before {
-      content: "MOST POPULAR";
-      position: absolute;
-      top: -12px; left: 50%;
-      transform: translateX(-50%);
-      background: var(--primary);
-      color: #fff;
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.05em;
-      padding: 4px 14px;
-      border-radius: 999px;
-      white-space: nowrap;
-    }
-    .plan-name {
-      font-size: 1.15rem;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-    .plan-price {
-      display: flex;
-      align-items: baseline;
-      gap: 4px;
-      margin-bottom: 12px;
-    }
-    .plan-price .amount {
-      font-size: 1.9rem;
-      font-weight: 800;
-      color: var(--primary);
-      letter-spacing: -0.03em;
-    }
-    .plan-price .period {
-      font-size: 0.85rem;
-      color: var(--muted);
-      font-weight: 500;
-    }
-    .plan-features {
-      list-style: none;
-      margin-bottom: 18px;
-      flex: 1;
-    }
-    .plan-features li {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 0.875rem;
-      color: var(--muted);
-      padding: 4px 0;
-    }
-    .plan-features li svg {
-      width: 16px; height: 16px;
-      color: var(--success);
-      flex-shrink: 0;
-    }
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      width: 100%;
-      padding: 13px 20px;
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-weight: 600;
-      font-family: inherit;
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-    }
-    .btn-primary {
-      background: var(--primary);
-      color: #fff;
-      box-shadow: 0 4px 14px rgba(10, 124, 255, 0.35);
-    }
-    .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-outline {
-      background: transparent;
-      color: var(--primary);
-      border: 2px solid var(--primary);
-    }
-    .btn-outline:hover { background: var(--primary-light); }
-    .btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-
-    /* ========== VOUCHER SECTION ========== */
-    .voucher-card {
-      background: var(--card);
-      border-radius: var(--radius);
-      padding: 22px 20px;
-      box-shadow: var(--shadow);
-      margin-bottom: 28px;
-    }
-    .voucher-row {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .voucher-row input {
-      flex: 1;
-      min-width: 160px;
-      padding: 13px 16px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 0.95rem;
-      font-family: inherit;
-      transition: border-color 0.2s;
-      background: #fafafa;
-    }
-    .voucher-row input:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: #fff;
-    }
-    .voucher-row .btn { width: auto; white-space: nowrap; }
-
-    /* ========== FOOTER ========== */
-    footer {
-      margin-top: auto;
-      padding: 24px 0 12px;
-      border-top: 1px solid var(--border);
-      font-size: 0.8rem;
-      color: var(--muted);
-    }
-    .footer-terms {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
-    .footer-terms input[type="checkbox"] {
-      width: 18px; height: 18px;
-      accent-color: var(--primary);
-      margin-top: 2px;
-      flex-shrink: 0;
-      cursor: pointer;
-    }
-    .footer-terms label { cursor: pointer; }
-    .footer-terms a { color: var(--primary); text-decoration: none; font-weight: 500; }
-    .footer-terms a:hover { text-decoration: underline; }
-    .footer-bottom {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .footer-links { display: flex; gap: 16px; }
-    .footer-links a { color: var(--muted); text-decoration: none; }
-    .footer-links a:hover { color: var(--primary); }
-
-    /* ========== MODAL ========== */
-    .modal-overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 1000;
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.25s, visibility 0.25s;
-    }
-    .modal-overlay.active { opacity: 1; visibility: visible; }
-    .modal {
-      background: #fff;
-      border-radius: 20px;
-      width: 100%;
-      max-width: 420px;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: var(--shadow-lg);
-      transform: translateY(20px) scale(0.97);
-      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-      position: relative;
-    }
-    .modal-overlay.active .modal { transform: translateY(0) scale(1); }
-    .modal-header {
-      padding: 22px 24px 0;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .modal-header h3 { font-size: 1.2rem; font-weight: 700; }
-    .modal-close {
-      width: 36px; height: 36px;
-      border-radius: 50%;
-      border: none;
-      background: #f3f4f6;
-      color: var(--muted);
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: background 0.2s;
-      flex-shrink: 0;
-    }
-    .modal-close:hover { background: #e5e7eb; color: var(--text); }
-    .modal-body { padding: 20px 24px 24px; }
-
-    .plan-summary {
-      background: var(--primary-light);
-      border-radius: var(--radius-sm);
-      padding: 14px 16px;
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .plan-summary .label { font-size: 0.8rem; color: var(--muted); font-weight: 500; }
-    .plan-summary .value { font-size: 1.1rem; font-weight: 700; color: var(--primary); }
-
-    .form-group { margin-bottom: 16px; }
-    .form-group label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: var(--text);
-    }
-    .form-group input {
-      width: 100%;
-      padding: 14px 16px;
-      border: 2px solid var(--border);
-      border-radius: var(--radius-sm);
-      font-size: 1rem;
-      font-family: inherit;
-      transition: border-color 0.2s;
-      background: #fafafa;
-    }
-    .form-group input:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: #fff;
-    }
-    .form-group input.error { border-color: var(--error); }
-    .form-hint {
-      font-size: 0.75rem;
-      color: var(--muted);
-      margin-top: 4px;
-    }
-    .form-hint.error { color: var(--error); }
-
-    .status-box {
-      display: none;
-      padding: 14px 16px;
-      border-radius: var(--radius-sm);
-      font-size: 0.875rem;
-      font-weight: 500;
-      margin-top: 16px;
-      line-height: 1.5;
-    }
-    .status-box.info { display: block; background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
-    .status-box.success { display: block; background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-    .status-box.error { display: block; background: #fef2f2; color: #991b1b; border: 1px solid #fecaca; }
-    .status-box.warning { display: block; background: #fffbeb; color: #92400e; border: 1px solid #fde68a; }
-
-    .spinner {
-      display: inline-block;
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-      vertical-align: middle;
-      margin-right: 6px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .success-icon {
-      width: 64px; height: 64px;
-      border-radius: 50%;
-      background: #ecfdf5;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      animation: pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-    .success-icon svg { width: 32px; height: 32px; color: var(--success); }
-    @keyframes pop {
-      0% { transform: scale(0); }
-      100% { transform: scale(1); }
-    }
-    .text-center { text-align: center; }
-
-    /* ========== ANIMATIONS ========== */
-    .fade-in {
-      animation: fadeIn 0.4s ease-out both;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .plan-card { animation: fadeIn 0.5s ease-out both; }
-    .plan-card:nth-child(1) { animation-delay: 0.05s; }
-    .plan-card:nth-child(2) { animation-delay: 0.1s; }
-    .plan-card:nth-child(3) { animation-delay: 0.15s; }
-    .plan-card:nth-child(4) { animation-delay: 0.2s; }
-    .plan-card:nth-child(5) { animation-delay: 0.25s; }
-    .plan-card:nth-child(6) { animation-delay: 0.3s; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guevara WiFi - Captive Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/dist/umd/supabase.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            min-height: 100vh; 
+            color: #fff; 
+            padding: 2rem;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { font-size: 2.5rem; margin-bottom: 1rem; }
+        .subtitle { color: #c8d6e5; font-size: 1.2rem; margin-bottom: 2rem; }
+        
+        .plan-card { 
+            background: rgba(255,255,255,0.1); 
+            backdrop-filter: blur(10px); 
+            border-radius: 16px; 
+            padding: 2rem; 
+            margin-bottom: 1.5rem; 
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        .plan-card:hover { border-color: #fff; transform: translateY(-4px); }
+        .plan-name { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .plan-price { color: #e0e7ff; font-size: 1.2rem; margin-bottom: 1rem; }
+        .plan-features { list-style: none; padding: 0; }
+        .plan-features li { 
+            color: #98a2b3; 
+            font-size: 0.9rem; 
+            margin: 0.5rem 0; 
+            display: flex; 
+            align-items: center; 
+            gap: 0.5rem; 
+        }
+        .plan-features li::before { content: "✓"; color: #48dbfb; font-size: 0.8rem; }
+        
+        .connect-btn { 
+            width: 100%; 
+            padding: 1rem; 
+            background: #fff; 
+            color: #667eea; 
+            border: none; 
+            border-radius: 12px; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            margin-top: 1rem;
+            transition: background 0.2s;
+        }
+        .connect-btn:hover { background: #fff; }
+        .connect-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+        
+        .phone-input { 
+            width: 100%; 
+            padding: 0.8rem 1rem; 
+            background: rgba(255,255,255,0.2); 
+            border: 2px solid rgba(255,255,255,0.3); 
+            border-radius: 12px; 
+            color: #fff; 
+            font-size: 1rem; 
+            margin: 0.5rem 0 1rem 0;
+            transition: border-color 0.2s;
+        }
+        .phone-input:focus { outline: none; border-color: #c8d6e5; }
+        
+        .status { padding: 1rem; border-radius: 12px; margin: 1rem 0; font-size: 0.9rem; }
+        .status.success { background: rgba(16, 185, 129, 0.2); color: #a7f3d0; border: 1px solid #48dbfb; }
+        .status.error { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #fc8181; }
+        .status.pending { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #fcd34d; }
+        
+        .footer { margin-top: 2rem; text-align: center; color: #98a2b3; font-size: 0.8rem; }
+        .footer a { color: #a7f3d0; text-decoration: underline; }
+    </style>
 </head>
 <body>
-
-  <!-- ========== HEADER ========== -->
-  <header class="container">
-    <div class="brand">
-      <div class="brand-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M5 12.55a11 11 0 0 1 14.08 0"/>
-          <path d="M1.42 9a16 16 0 0 1 21.16 0"/>
-          <path d="M8.53 16.11a6 6 0 0 1 6.95 0"/>
-          <line x1="12" y1="20" x2="12.01" y2="20"/>
-        </svg>
-      </div>
-      <div class="brand-text">
+    <div class="container">
         <h1>Guevara WiFi</h1>
-        <span>Fast • Reliable • Affordable</span>
-      </div>
-    </div>
-    <a href="tel:+254700000000" class="support-link">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
-      </svg>
-      Help
-    </a>
-  </header>
-
-  <!-- ========== HERO ========== -->
-  <section class="hero container">
-    <h2>Fast WiFi. <span>Instant Access.</span></h2>
-    <p>Choose a plan, pay with M-Pesa, and get online in seconds. No passwords, no hassle.</p>
-  </section>
-
-  <!-- ========== PLANS ========== -->
-  <main class="container">
-    <div class="section-title">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
-        <line x1="8" y1="21" x2="16" y2="21"/>
-        <line x1="12" y1="17" x2="12" y2="21"/>
-      </svg>
-      Choose Your Plan
-    </div>
-
-    <div class="plans-grid" id="plansGrid">
-      <!-- Plans are rendered by JavaScript -->
-    </div>
-
-    <!-- ========== VOUCHER ========== -->
-    <div class="voucher-card fade-in">
-      <div class="section-title" style="margin-bottom:10px;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 12v6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-6"/>
-          <path d="M2 7h20v5H2z"/>
-          <path d="M12 22V7"/>
-          <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/>
-          <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/>
-        </svg>
-        Have a Voucher?
-      </div>
-      <div class="voucher-row">
-        <input type="text" id="voucherInput" placeholder="Enter voucher code" autocomplete="off" spellcheck="false">
-        <button class="btn btn-outline" id="redeemBtn">Redeem</button>
-      </div>
-      <div id="voucherStatus" class="status-box"></div>
-    </div>
-  </main>
-
-  <!-- ========== FOOTER ========== -->
-  <footer class="container">
-    <div class="footer-terms">
-      <input type="checkbox" id="termsCheck">
-      <label for="termsCheck">
-        I agree to the <a href="/terms" target="_blank">Terms of Service</a> and <a href="/privacy" target="_blank">Privacy Policy</a>.
-      </label>
-    </div>
-    <div class="footer-bottom">
-      <span>© 2026 Guevara WiFi. All rights reserved.</span>
-      <div class="footer-links">
-        <a href="/terms" target="_blank">Terms</a>
-        <a href="/privacy" target="_blank">Privacy</a>
-        <a href="tel:+254700000000">Support</a>
-      </div>
-    </div>
-  </footer>
-
-  <!-- ========== PAYMENT MODAL ========== -->
-  <div class="modal-overlay" id="paymentModal">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal-header">
-        <h3 id="modalTitle">Complete Payment</h3>
-        <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
-      </div>
-      <div class="modal-body" id="modalBody">
-        <!-- Dynamic content injected by JS -->
-      </div>
-    </div>
-  </div>
-
-  <script>
-    /* ============================================================
-       GUEVARA WIFI — CAPTIVE PORTAL SCRIPT
-       ============================================================
-       This script handles:
-       1. Rendering plan cards
-       2. Opening the payment modal
-       3. Validating M-Pesa phone numbers
-       4. Initiating STK Push (POST /api/mpesa/stkpush)
-       5. Polling payment status (GET /api/mpesa/status)
-       6. Voucher redemption (POST /api/voucher/redeem)
-       7. Terms acceptance enforcement
-
-       BACKEND ENDPOINTS (replace with your actual API):
-       - POST /api/mpesa/stkpush
-         Body: { phone: "2547XXXXXXXX", planId: "daily-2gb", amount: 50 }
-         Response: { success: true, checkoutRequestId: "...", message: "..." }
-
-       - GET /api/mpesa/status?checkoutRequestId=...
-         Response: { status: "pending" | "success" | "failed", message: "..." }
-
-       - POST /api/voucher/redeem
-         Body: { code: "ABC123", phone: "2547XXXXXXXX" }  // phone optional
-         Response: { success: true, message: "..." }
-       ============================================================ */
-
-    // ========== PLAN DATA ==========
-    const PLANS = [
-      {
-        id: 'hourly',
-        name: 'Hourly Boost',
-        price: 20,
-        period: 'per hour',
-        features: ['Unlimited data', '1 device', '1 hour validity'],
-        popular: false
-      },
-      {
-        id: 'daily-2gb',
-        name: 'Daily 2GB',
-        price: 50,
-        period: 'per day',
-        features: ['2GB data', '1 device', '24 hours validity'],
-        popular: true
-      },
-      {
-        id: 'daily-unlimited',
-        name: 'Daily Unlimited',
-        price: 100,
-        period: 'per day',
-        features: ['Unlimited data', '2 devices', '24 hours validity'],
-        popular: false
-      },
-      {
-        id: 'weekly',
-        name: 'Weekly Unlimited',
-        price: 500,
-        period: 'per week',
-        features: ['Unlimited data', '3 devices', '7 days validity'],
-        popular: false
-      },
-      {
-        id: 'monthly',
-        name: 'Monthly Home',
-        price: 1500,
-        period: 'per month',
-        features: ['Unlimited data', '5 devices', '30 days validity', 'Priority support'],
-        popular: false
-      },
-      {
-        id: 'night-owl',
-        name: 'Night Owl',
-        price: 30,
-        period: 'per night',
-        features: ['Unlimited data', '1 device', '10PM – 6AM'],
-        popular: false
-      }
-    ];
-
-    // ========== STATE ==========
-    let selectedPlan = null;
-    let pollingInterval = null;
-    let pollCount = 0;
-    const MAX_POLLS = 20; // 20 * 3s = 60 seconds timeout
-
-    // ========== DOM REFERENCES ==========
-    const plansGrid = document.getElementById('plansGrid');
-    const paymentModal = document.getElementById('paymentModal');
-    const modalBody = document.getElementById('modalBody');
-    const modalClose = document.getElementById('modalClose');
-    const termsCheck = document.getElementById('termsCheck');
-    const voucherInput = document.getElementById('voucherInput');
-    const redeemBtn = document.getElementById('redeemBtn');
-    const voucherStatus = document.getElementById('voucherStatus');
-
-    // ========== RENDER PLANS ==========
-    function renderPlans() {
-      plansGrid.innerHTML = PLANS.map(plan => `
-        <div class="plan-card ${plan.popular ? 'popular' : ''}" data-plan-id="${plan.id}">
-          <div class="plan-name">${plan.name}</div>
-          <div class="plan-price">
-            <span class="amount">KSh ${plan.price.toLocaleString()}</span>
-            <span class="period">${plan.period}</span>
-          </div>
-          <ul class="plan-features">
-            ${plan.features.map(f => `
-              <li>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
+        <p class="subtitle">Pay with M-Pesa & Get Online Instantly</p>
+        
+        <div class="plans-grid">
+            <!-- Plans will be rendered by JS -->
+        </div>
+        
+        <div id="connectSection">
+            <h3>Connect with Phone Number</h3>
+            <input type="tel" id="phoneInput" class="phone-input" placeholder="e.g., 0712345678" autocomplete="off">
+            <button class="connect-btn" id="connectBtn">Connect & Pay with M-Pesa</button>
+            <p id="statusDisplay" class="status pending">Enter your phone number to begin</p>
+        </div>
+        
+        <div id="successSection" style="display: none; margin-top: 2rem;">
+            <div class="status success">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-right: 0.5rem; vertical-align: middle;">
+                    <path d="M20 6L9 17l-5-5"/>
                 </svg>
-                ${f}
-              </li>
-            `).join('')}
-          </ul>
-          <button class="btn btn-primary buy-btn" data-plan-id="${plan.id}">
-            Buy with M-Pesa
-          </button>
+                <span>Connected Successfully!</span>
+                <p>Your <strong>${planName}</strong> plan is now active.</p>
+                <p>Enjoy unlimited internet on Guevara WiFi network.</p>
+            </div>
         </div>
-      `).join('');
+        
+        <footer>
+            <p>© 2026 Guevara Limited | <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
+        </footer>
+    </div>
 
-      // Attach event listeners to buy buttons
-      document.querySelectorAll('.buy-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const planId = btn.dataset.planId;
-          handleBuyClick(planId);
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.0/+esm';
+        
+        const supabase = createClient(
+            'https://kbdsoorrgyzlfctrudfs.supabase.co',
+            'sb_publishable_z9oJBmXczAjb_Qncl5uN9w_pzTUnys6'
+        );
+        
+        // Plan data
+        const plans = [
+            { id: 'hourly', name: 'Hourly Boost', price: 20, data: '1 hour', features: ['Unlimited data for 1 hour'] },
+            { id: 'daily-2gb', name: 'Daily 2GB', price: 50, data: '2GB', features: ['2GB data for 24 hours'] },
+            { id: 'daily-unlimited', name: 'Daily Unlimited', price: 100, data: 'Unlimited', features: ['Unlimited data for 24 hours'] },
+            { id: 'weekly', name: 'Weekly Unlimited', price: 500, data: '7 days', features: ['Unlimited data for 7 days'] },
+            { id: 'monthly', name: 'Monthly Home', price: 1500, data: '30 days', features: ['Unlimited data for 30 days, 5 devices'] }
+        ];
+        
+        let selectedPlan = null;
+        
+        // Render plans
+        const plansGrid = document.createElement('div');
+        plansGrid.style.display = 'grid';
+        plansGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(250px, 1fr))';
+        plansGrid.style.gap: '1.5rem';
+        plansGrid.style.marginBottom: '2rem';
+        
+        plans.forEach(plan => {
+            const card = document.createElement('div');
+            card.className = 'plan-card';
+            card.innerHTML = `
+                <div class="plan-name">${plan.name}</div>
+                <div class="plan-price">KSh ${plan.price}</div>
+                <ul class="plan-features">
+                    ${plan.features.map(f => `<li>${f}</li>`).join('')}
+                </ul>
+                <button class="connect-btn" data-plan-id="${plan.id}">Connect & Pay</button>
+            `;
+            card.querySelector(`[data-plan-id="${plan.id}"]`).addEventListener('click', () => selectPlan(plan));
+            plansGrid.appendChild(card);
         });
-      });
-    }
-
-    // ========== HANDLE BUY CLICK ==========
-    function handleBuyClick(planId) {
-      // Enforce terms acceptance
-      if (!termsCheck.checked) {
-        alert('Please agree to the Terms of Service before purchasing.');
-        termsCheck.focus();
-        return;
-      }
-
-      selectedPlan = PLANS.find(p => p.id === planId);
-      if (!selectedPlan) return;
-
-      openPaymentModal(selectedPlan);
-    }
-
-    // ========== OPEN PAYMENT MODAL ==========
-    function openPaymentModal(plan) {
-      modalBody.innerHTML = `
-        <div class="plan-summary">
-          <div>
-            <div class="label">Selected Plan</div>
-            <div style="font-weight:700;">${plan.name}</div>
-          </div>
-          <div style="text-align:right;">
-            <div class="label">Amount</div>
-            <div class="value">KSh ${plan.price.toLocaleString()}</div>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="mpesaPhone">M-Pesa Phone Number</label>
-          <input type="tel" id="mpesaPhone" placeholder="07XX XXX XXX" autocomplete="tel" inputmode="numeric">
-          <div class="form-hint" id="phoneHint">Enter the Safaricom number to receive the STK push.</div>
-        </div>
-
-        <button class="btn btn-primary" id="payBtn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-            <line x1="1" y1="10" x2="23" y2="10"/>
-          </svg>
-          Pay KSh ${plan.price.toLocaleString()} with M-Pesa
-        </button>
-
-        <div id="paymentStatus" class="status-box"></div>
-      `;
-
-      paymentModal.classList.add('active');
-      document.body.style.overflow = 'hidden';
-
-      // Focus phone input after animation
-      setTimeout(() => {
-        const phoneInput = document.getElementById('mpesaPhone');
-        if (phoneInput) phoneInput.focus();
-      }, 300);
-
-      // Attach pay button listener
-      document.getElementById('payBtn').addEventListener('click', initiatePayment);
-
-      // Allow Enter key in phone input to trigger payment
-      document.getElementById('mpesaPhone').addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') initiatePayment();
-      });
-    }
-
-    // ========== CLOSE MODAL ==========
-    function closeModal() {
-      paymentModal.classList.remove('active');
-      document.body.style.overflow = '';
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-        pollingInterval = null;
-      }
-      pollCount = 0;
-      selectedPlan = null;
-    }
-
-    modalClose.addEventListener('click', closeModal);
-    paymentModal.addEventListener('click', (e) => {
-      if (e.target === paymentModal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && paymentModal.classList.contains('active')) closeModal();
-    });
-
-    // ========== PHONE VALIDATION ==========
-    function validatePhone(phone) {
-      // Strip spaces, dashes, parentheses
-      const cleaned = phone.replace(/[\s\-()]/g, '');
-      // Accept: 07XXXXXXXX, 01XXXXXXXX, +2547XXXXXXXX, 2547XXXXXXXX
-      const regex = /^(?:\+254|254|0)?(7|1)\d{8}$/;
-      if (!regex.test(cleaned)) return null;
-      // Normalize to 2547XXXXXXXX or 2541XXXXXXXX
-      let normalized = cleaned;
-      if (normalized.startsWith('+254')) normalized = normalized.substring(1);
-      if (normalized.startsWith('0')) normalized = '254' + normalized.substring(1);
-      if (normalized.startsWith('254')) return normalized;
-      return '254' + normalized;
-    }
-
-    // ========== INITIATE PAYMENT (STK PUSH) ==========
-    async function initiatePayment() {
-      const phoneInput = document.getElementById('mpesaPhone');
-      const payBtn = document.getElementById('payBtn');
-      const statusBox = document.getElementById('paymentStatus');
-      const phoneHint = document.getElementById('phoneHint');
-
-      const rawPhone = phoneInput.value.trim();
-      const normalizedPhone = validatePhone(rawPhone);
-
-      if (!normalizedPhone) {
-        phoneInput.classList.add('error');
-        phoneHint.textContent = 'Please enter a valid Safaricom number (e.g., 0712 345 678).';
-        phoneHint.classList.add('error');
-        phoneInput.focus();
-        return;
-      }
-
-      phoneInput.classList.remove('error');
-      phoneHint.textContent = 'Enter the Safaricom number to receive the STK push.';
-      phoneHint.classList.remove('error');
-
-      // Disable button and show loading
-      payBtn.disabled = true;
-      payBtn.innerHTML = '<span class="spinner"></span> Sending STK Push...';
-      statusBox.className = 'status-box info';
-      statusBox.textContent = 'Sending payment request to your phone...';
-
-      try {
-        // ===== BACKEND CALL: INITIATE STK PUSH =====
-        const response = await fetch('/api/mpesa/stkpush', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            phone: normalizedPhone,
-            planId: selectedPlan.id,
-            amount: selectedPlan.price
-          })
+        
+        // Replace the plans grid
+        const gridElement = document.querySelector('.plans-grid');
+        if (gridElement) gridElement.replaceWith(plansGrid);
+        
+        // Select plan function
+        async function selectPlan(plan) {
+            selectedPlan = plan;
+            
+            // Update connect section
+            const connectSection = document.getElementById('connectSection');
+            const statusDisplay = document.getElementById('statusDisplay');
+            const connectBtn = document.getElementById('connectBtn');
+            
+            connectSection.style.display = 'block';
+            statusDisplay.textContent = `Selected: ${plan.name} - KSh ${plan.price}`;
+            connectBtn.onclick = initiateConnection;
+            
+            // Hide success section
+            document.getElementById('successSection').style.display = 'none';
+        }
+        
+        async function initiateConnection() {
+            const phoneInput = document.getElementById('phoneInput');
+            const phone = phoneInput.value.trim();
+            
+            if (!phone || !selectedPlan) {
+                showStatus('Please enter a valid phone number and select a plan', 'error');
+                return;
+            }
+            
+            // Validate phone number (Kenyan format)
+            const cleanedPhone = phone.replace(/[\s-]/g, '');
+            if (!/^(07|2547)\d{8}$/.test(cleanedPhone)) {
+                showStatus('Please enter a valid Safaricom number starting with 07', 'error');
+                phoneInput.focus();
+                return;
+            }
+            
+            // Show pending status
+            showStatus('Processing your connection...', 'pending');
+            
+            try {
+                // Sign in or create anonymous session with guest data
+                const { data, error } = await supabase.auth.signInWithOtp({
+                    email: `guest_${Date.now()}@guevara.wifi`,
+                    options: {
+                        data: {
+                            phone: cleanedPhone,
+                            plan_id: selectedPlan.id,
+                            plan_name: selectedPlan.name,
+                            plan_price: selectedPlan.price
+                        }
+                    }
+                });
+                
+                if (error) throw error;
+                
+                // Insert billing record
+                const { error: billingError } = await supabase
+                    .from('users_billing')
+                    .insert([{
+                        user_id: data.user.id,
+                        amount_paid: selectedPlan.price,
+                        status: 'pending',
+                        payment_date: new Date().toISOString(),
+                        plan_id: selectedPlan.id
+                    }];
+                
+                if (billingError) throw billingError;
+                
+                // Show pending status and start polling
+                showStatus('M-Pesa STK push sent to your phone. Enter PIN to complete.', 'pending');
+                
+                // Poll for payment status
+                pollPaymentStatus(data.user.id);
+                
+            } catch (error) {
+                console.error(error);
+                showStatus('Error: ' + error.message, 'error');
+            }
+            
+            phoneInput.value = '';
+        }
+        
+        function pollPaymentStatus(userId) {
+            const statusDisplay = document.getElementById('statusDisplay');
+            let pollCount = 0;
+            const maxPolls = 30; // 30 seconds
+            
+            const interval = setInterval(async () => {
+                pollCount++;
+                if (pollCount > maxPolls) {
+                    clearInterval(interval);
+                    showStatus('Payment timed out. Please try again or contact support.', 'error');
+                    return;
+                }
+                
+                const { data, error } = await supabase
+                    .from('users_billing')
+                    .select('status, paid_at')
+                    .eq('user_id', userId)
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+                
+                if (error) {
+                    console.error('Poll error:', error);
+                    return;
+                }
+                
+                if (data && data.length > 0) {
+                    const billing = data[0];
+                    if (billing.status === 'paid') {
+                        clearInterval(interval);
+                        showStatus(`<strong>Connected!</strong> Payment received at ${new Date(billing.paid_at).toLocaleTimeString()}. Enjoy your ${selectedPlan.name} plan.`, 'success');
+                    } else if (billing.status === 'failed') {
+                        clearInterval(interval);
+                        showStatus('Payment failed. Please try again or contact support.', 'error');
+                    }
+                    // If still pending, continue polling
+                }
+            }, 1000); // Check every second
+        }
+        
+        function showStatus(message, type) {
+            const statusDisplay = document.getElementById('statusDisplay');
+            const connectBtn = document.getElementById('connectBtn');
+            const statusClass = ['pending', 'success', 'error'][type] || 'pending';
+            
+            statusDisplay.className = `status ${statusClass}`;
+            statusDisplay.textContent = message;
+            
+            if (type === 'success') {
+                // Show success section and hide connect section
+                document.getElementById('successSection').style.display = 'block';
+                document.getElementById('connectSection').style.display = 'none';
+                
+                // Get the plan name for the success message
+                const successSection = document.getElementById('successSection');
+                successSection.querySelector('strong').textContent = selectedPlan ? selectedPlan.name : 'your plan';
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.container');
+            if (container) container.insertBefore(plansGrid, document.querySelector('#connectSection') || container.firstChild);
         });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-          throw new Error(data.message || 'Failed to initiate payment. Please try again.');
-        }
-
-        // STK push sent successfully — start polling
-        statusBox.className = 'status-box info';
-        statusBox.innerHTML = `
-          <strong>Check your phone!</strong><br>
-          An M-Pesa prompt has been sent to <strong>${rawPhone}</strong>.
-          Enter your PIN to complete the payment.
-        `;
-        payBtn.innerHTML = '<span class="spinner"></span> Waiting for confirmation...';
-
-        // Start polling for payment status
-        startPolling(data.checkoutRequestId);
-
-      } catch (error) {
-        statusBox.className = 'status-box error';
-        statusBox.textContent = error.message || 'Something went wrong. Please try again.';
-        payBtn.disabled = false;
-        payBtn.innerHTML = `Pay KSh ${selectedPlan.price.toLocaleString()} with M-Pesa`;
-      }
-    }
-
-    // ========== POLL PAYMENT STATUS ==========
-    function startPolling(checkoutRequestId) {
-      pollCount = 0;
-      if (pollingInterval) clearInterval(pollingInterval);
-
-      pollingInterval = setInterval(async () => {
-        pollCount++;
-
-        // Timeout after MAX_POLLS
-        if (pollCount > MAX_POLLS) {
-          clearInterval(pollingInterval);
-          pollingInterval = null;
-          const statusBox = document.getElementById('paymentStatus');
-          const payBtn = document.getElementById('payBtn');
-          if (statusBox) {
-            statusBox.className = 'status-box warning';
-            statusBox.textContent = 'Payment confirmation timed out. If you completed the payment, please reconnect or contact support.';
-          }
-          if (payBtn) {
-            payBtn.disabled = false;
-            payBtn.innerHTML = `Pay KSh ${selectedPlan.price.toLocaleString()} with M-Pesa`;
-          }
-          return;
-        }
-
-        try {
-          // ===== BACKEND CALL: CHECK PAYMENT STATUS =====
-          const response = await fetch(`/api/mpesa/status?checkoutRequestId=${encodeURIComponent(checkoutRequestId)}`);
-          const data = await response.json();
-
-          if (data.status === 'success') {
-            clearInterval(pollingInterval);
-            pollingInterval = null;
-            handlePaymentSuccess();
-          } else if (data.status === 'failed') {
-            clearInterval(pollingInterval);
-            pollingInterval = null;
-            handlePaymentFailure(data.message);
-          }
-          // If 'pending', continue polling
-        } catch (error) {
-          // Network error — keep polling but log it
-          console.warn('Polling error:', error);
-        }
-      }, 3000); // Poll every 3 seconds
-    }
-
-    // ========== PAYMENT SUCCESS ==========
-    function handlePaymentSuccess() {
-      modalBody.innerHTML = `
-        <div class="text-center">
-          <div class="success-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
-            </svg>
-          </div>
-          <h3 style="font-size:1.3rem;margin-bottom:8px;">Payment Successful!</h3>
-          <p style="color:var(--muted);margin-bottom:20px;">
-            You are now connected to <strong>Guevara WiFi</strong>. Enjoy your browsing!
-          </p>
-          <div class="status-box success" style="margin-bottom:20px;">
-            Your ${selectedPlan.name} plan is active. If you experience any issues, try reconnecting to the WiFi network.
-          </div>
-          <button class="btn btn-primary" onclick="closeModal()">Start Browsing</button>
-        </div>
-      `;
-    }
-
-    // ========== PAYMENT FAILURE ==========
-    function handlePaymentFailure(message) {
-      const statusBox = document.getElementById('paymentStatus');
-      const payBtn = document.getElementById('payBtn');
-      if (statusBox) {
-        statusBox.className = 'status-box error';
-        statusBox.textContent = message || 'Payment failed or was cancelled. Please try again.';
-      }
-      if (payBtn) {
-        payBtn.disabled = false;
-        payBtn.innerHTML = `Pay KSh ${selectedPlan.price.toLocaleString()} with M-Pesa`;
-      }
-    }
-
-    // ========== VOUCHER REDEMPTION ==========
-    redeemBtn.addEventListener('click', async () => {
-      const code = voucherInput.value.trim().toUpperCase();
-
-      if (!code) {
-        voucherStatus.className = 'status-box error';
-        voucherStatus.textContent = 'Please enter a voucher code.';
-        return;
-      }
-
-      if (!termsCheck.checked) {
-        voucherStatus.className = 'status-box error';
-        voucherStatus.textContent = 'Please agree to the Terms of Service first.';
-        return;
-      }
-
-      redeemBtn.disabled = true;
-      redeemBtn.innerHTML = '<span class="spinner" style="border-color:rgba(10,124,255,0.3);border-top-color:var(--primary);"></span> Redeeming...';
-      voucherStatus.className = 'status-box info';
-      voucherStatus.textContent = 'Validating voucher...';
-
-      try {
-        // ===== BACKEND CALL: REDEEM VOUCHER =====
-        const response = await fetch('/api/voucher/redeem', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ code })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.success) {
-          throw new Error(data.message || 'Invalid or expired voucher code.');
-        }
-
-        voucherStatus.className = 'status-box success';
-        voucherStatus.textContent = data.message || 'Voucher redeemed successfully! You are now connected.';
-        voucherInput.value = '';
-
-      } catch (error) {
-        voucherStatus.className = 'status-box error';
-        voucherStatus.textContent = error.message || 'Failed to redeem voucher. Please try again.';
-      } finally {
-        redeemBtn.disabled = false;
-        redeemBtn.innerHTML = 'Redeem';
-      }
-    });
-
-    // Allow Enter key in voucher input
-    voucherInput.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') redeemBtn.click();
-    });
-
-    // ========== INITIALIZE ==========
-    renderPlans();
-  </script>
+    </script>
 </body>
 </html>
